@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SolveAI – Professional business support</title>
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--tx:#14213d;--mut:#5b6478;--ac:#2456e6;--bd:#e2e6ef;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--card:#172038;--tx:#eef1f8;--mut:#9aa5bf;--ac:#6b8cff;--bd:#26314f}}
+:root[data-theme="dark"]{--bg:#0e1424;--card:#172038;--tx:#eef1f8;--mut:#9aa5bf;--ac:#6b8cff;--bd:#26314f}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:12px 20px;z-index:5;flex-wrap:wrap;gap:8px}
+header b{font-size:20px}nav{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+nav a{color:var(--mut);text-decoration:none;font-size:14px}
+section{max-width:1000px;margin:0 auto;padding:44px 20px}
+h1{font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 12px}h2{margin:0 0 18px}
+p{color:var(--mut)}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:10px 18px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.o{background:transparent;color:var(--ac);border:1px solid var(--ac)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:20px}
+.price{font-size:26px;font-weight:700;color:var(--tx)}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit;margin:6px 0 12px}
+label{font-size:14px;color:var(--mut)}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}td{padding:6px 0;border-bottom:1px solid var(--bd);vertical-align:top}
+code{word-break:break-all;background:var(--bg);padding:2px 6px;border-radius:6px;font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+.modal.on{display:flex}.modal .card{width:100%;max-width:400px}
+.msg{font-size:14px;color:var(--mut);min-height:20px}
+.out{white-space:pre-wrap;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:12px;margin-top:10px;display:none}
+.tag{font-size:12px;background:var(--ac);color:#fff;border-radius:99px;padding:2px 10px}
+</style>
+</head>
+<body>
+<header>
+  <b>SolveAI</b>
+  <nav>
+    <a href="#services">Services</a><a href="#trial">Free trial</a><a href="#pricing">Packages</a><a href="#fees">Fees</a><a href="#contact">Contact</a>
+    <span id="userbox"><button class="btn o" onclick="openLogin('login')">Log in</button></span>
+  </nav>
+</header>
+
+<section id="top">
+  <h1>Turn complex challenges into clear next steps.</h1>
+  <p>Structured analysis, technical evaluation, and practical action plans for companies that need confident decisions.</p>
+  <a class="btn" href="#trial">Try it free</a> <a class="btn o" href="#services">Explore services</a>
+  <p>✓ Consent-based &nbsp; ✓ Clear scope &nbsp; ✓ Practical delivery</p>
+</section>
+
+<section id="services">
+  <h2>Focused expertise, built around your outcome.</h2>
+  <div class="grid">
+    <div class="card"><b>01 Problem analysis</b><p>Understand bottlenecks, risks, and priorities with a concise assessment.</p></div>
+    <div class="card"><b>02 Technical evaluation</b><p>Review systems only within an agreed, authorized scope.</p></div>
+    <div class="card"><b>03 Action planning</b><p>A practical roadmap with timeline, responsibilities, and next steps.</p></div>
+  </div>
+</section>
+
+<section id="trial">
+  <h2>Have a business problem? Try a free diagnosis.</h2>
+  <div class="card">
+    <p>Describe what your company is struggling with. You'll get a short preliminary diagnosis for free. The full step-by-step action plan is delivered after you subscribe to a package below.</p>
+    <p id="trialStatus" class="msg"></p>
+    <label>Company name (optional)</label><input id="trCompany" placeholder="Acme Inc.">
+    <label>What problem are you facing?</label><textarea id="trProblem" rows="4" placeholder="e.g. Our customer churn has doubled in the last two quarters and we don't know why…"></textarea>
+    <button class="btn" id="trialBtn" onclick="requestTrial()">Get free diagnosis</button>
+    <div id="trialOut" class="out"></div>
+  </div>
+</section>
+
+<section id="pricing">
+  <h2>Choose a starting point.</h2>
+  <div class="grid">
+    <div class="card"><b>Starter Review</b><div class="price">50 USDT</div><p>Initial review and recommendations summary.</p><button class="btn" onclick="pick('Starter Review')">Choose package</button></div>
+    <div class="card"><span class="tag">Most popular</span> <b>Business Analysis</b><div class="price">250 USDT</div><p>Full analysis, scope definition, and execution roadmap.</p><button class="btn" onclick="pick('Business Analysis')">Choose package</button></div>
+    <div class="card"><b>Executive Support</b><div class="price">500 USDT</div><p>Deep review, team guidance, and custom advisory.</p><button class="btn" onclick="pick('Executive Support')">Choose package</button></div>
+  </div>
+</section>
+
+<section id="fees">
+  <h2>Payment &amp; fees</h2>
+  <div class="grid">
+    <div class="card">
+      <label>Package</label>
+      <select id="pkg" onchange="calc()">
+        <option value="Starter Review|50">Starter Review – 50 USDT</option>
+        <option value="Business Analysis|250">Business Analysis – 250 USDT</option>
+        <option value="Executive Support|500">Executive Support – 500 USDT</option>
+      </select>
+      <label>Payment processing fee (%)</label>
+      <input id="feepct" type="number" value="2" min="0" step="0.1" oninput="calc()">
+      <label>Network (BNB Smart Chain) gas fee, USDT</label>
+      <input id="gas" type="number" value="0.30" min="0" step="0.05" oninput="calc()">
+      <table>
+        <tr><td>Package price</td><td id="f1"></td></tr>
+        <tr><td>Processing fee</td><td id="f2"></td></tr>
+        <tr><td>Network fee (paid by sender)</td><td id="f3"></td></tr>
+        <tr><td><b>Total to send</b></td><td><b id="f4"></b></td></tr>
+      </table>
+      <button class="btn" onclick="invoice()">Create invoice</button>
+    </div>
+    <div class="card">
+      <b>Payment after agreement</b>
+      <p>Invoices are issued after scope approval. Send only USDT on BNB Smart Chain (BEP-20, Chain ID 56).</p>
+      <p><b>Receiving address</b><br><code>0x270eafea7449be0ebd4eb931e436dde3972dc1cf</code></p>
+      <div id="inv" class="out"></div>
+    </div>
+  </div>
+</section>
+
+<section id="owner" style="display:none">
+  <h2>Owner dashboard</h2>
+  <div class="grid">
+    <div class="card"><b>Accounts</b><table id="ownerUsers"><tr><td>Loading…</td></tr></table></div>
+    <div class="card"><b>Invoices</b><table id="ownerInvoices"><tr><td>Loading…</td></tr></table></div>
+    <div class="card"><b>Free-trial leads</b><table id="ownerLeads"><tr><td>Loading…</td></tr></table></div>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Tell us what needs solving.</h2>
+  <div class="card">
+    <p>We respond through our official email after reviewing your request. No unauthorized testing or access is performed.</p>
+    <label>Name</label><input id="cn"><label>Your challenge</label><textarea id="cm" rows="4"></textarea>
+    <a class="btn" href="#" onclick="mail();return false">Send request</a>
+    <p>almoizaledrisi@gmail.com</p>
+  </div>
+</section>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeM()">
+  <div class="card">
+    <h2 id="mt">Log in</h2>
+    <label>Email</label><input id="em" type="email" autocomplete="email">
+    <label>Password (min 8 characters)</label><input id="pw" type="password" autocomplete="current-password">
+    <div class="msg" id="lm"></div>
+    <button class="btn" id="mb" onclick="submitAuth()">Log in</button>
+    <button class="btn o" onclick="closeM()">Cancel</button>
+    <p><a href="#" id="sw" onclick="swap();return false" style="color:var(--ac)">Need an account? Sign up</a></p>
+  </div>
+</div>
+
+<script>
+const API_BASE = ""; // served from the same Railway app as the API — same-origin
+
+var mode='login';
+function $(i){return document.getElementById(i)}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+function rm(k){try{localStorage.removeItem(k)}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]})}
+
+async function api(path,opts){
+  opts=opts||{};
+  var headers=Object.assign({'Content-Type':'application/json'},opts.headers||{});
+  var token=ls('sa_token');
+  if(token)headers.Authorization='Bearer '+token;
+  var r=await fetch(API_BASE+path,{method:opts.method||'GET',headers:headers,body:opts.body?JSON.stringify(opts.body):undefined});
+  var data=null;try{data=await r.json()}catch(e){}
+  if(!r.ok)throw new Error((data&&data.error)||( 'Request failed ('+r.status+')'));
+  return data;
+}
+
+/* ---- Login ---- */
+function openLogin(m){mode=m;$('lm').textContent='';syncModal();$('modal').classList.add('on')}
+function closeM(){$('modal').classList.remove('on')}
+function swap(){mode=mode==='login'?'signup':'login';syncModal()}
+function syncModal(){var l=mode==='login';$('mt').textContent=l?'Log in':'Create account';$('mb').textContent=l?'Log in':'Sign up';$('sw').textContent=l?'Need an account? Sign up':'Have an account? Log in'}
+async function submitAuth(){
+  var e=$('em').value.trim().toLowerCase(),p=$('pw').value;
+  if(!/^\S+@\S+\.\S+$/.test(e)){$('lm').textContent='Enter a valid email.';return}
+  if(p.length<8){$('lm').textContent='Password must be at least 8 characters.';return}
+  $('lm').textContent='Please wait…';
+  try{
+    var d=await api(mode==='signup'?'/api/auth/signup':'/api/auth/login',{method:'POST',body:{email:e,password:p}});
+    ls('sa_token',d.token);$('pw').value='';closeM();await refreshMe();
+  }catch(err){$('lm').textContent=err.message}
+}
+function logout(){rm('sa_token');rm('sa_email');rm('sa_admin');renderUser()}
+
+var me=null;
+async function refreshMe(){
+  try{ me=await api('/api/me'); }
+  catch(e){ me=null; rm('sa_token'); }
+  renderUser();
+}
+function renderUser(){
+  var admin=!!(me&&me.isAdmin);
+  $('userbox').innerHTML = me
+    ? ('<span style="font-size:14px;color:var(--mut)">'+esc(me.email)+(admin?' <span class="tag">Owner</span>':'')+'</span> '
+       +(admin?'<a href="#owner" class="btn o" style="text-decoration:none">Dashboard</a> ':'')
+       +'<button class="btn o" onclick="logout()">Log out</button>')
+    : '<button class="btn o" onclick="openLogin(\'login\')">Log in</button>';
+  $('owner').style.display = admin ? 'block' : 'none';
+  $('trialStatus').textContent = me ? ('Free diagnoses remaining: '+me.trialsRemaining+' / '+me.trialLimit) : 'Log in to use your free diagnosis.';
+  if(admin) loadOwnerData();
+}
+
+/* ---- Free trial: preliminary diagnosis only ---- */
+async function requestTrial(){
+  var problem=$('trProblem').value.trim();
+  if(!problem){alert('Describe the problem first.');return}
+  if(!me){openLogin('login');return}
+  var out=$('trialOut');out.style.display='block';out.textContent='Analyzing…';
+  try{
+    var d=await api('/api/trial',{method:'POST',body:{company:$('trCompany').value.trim(),problem:problem}});
+    out.textContent=d.preview+'\n\n— Subscribe to a package below to get the full step-by-step solution.';
+    if(me)me.trialsRemaining=d.trialsRemaining;
+    $('trialStatus').textContent='Free diagnoses remaining: '+d.trialsRemaining+' / '+(me?me.trialLimit:'');
+  }catch(err){ out.textContent=err.message }
+}
+
+/* ---- Fees ---- */
+function calc(){
+  var v=$('pkg').value.split('|'),p=+v[1],pct=+$('feepct').value||0,g=+$('gas').value||0,fee=p*pct/100;
+  $('f1').textContent=p.toFixed(2)+' USDT';$('f2').textContent=fee.toFixed(2)+' USDT';$('f3').textContent=g.toFixed(2)+' USDT';$('f4').textContent=(p+fee+g).toFixed(2)+' USDT';
+  return {name:v[0],price:p,fee:fee,gas:g,total:p+fee+g};
+}
+function pick(n){var s=$('pkg');for(var i=0;i<s.options.length;i++)if(s.options[i].value.indexOf(n)===0)s.selectedIndex=i;calc();$('fees').scrollIntoView()}
+async function invoice(){
+  if(!me){openLogin('login');return}
+  var c=calc(),b=$('inv');
+  b.style.display='block';b.textContent='Creating invoice…';
+  try{
+    var inv=await api('/api/invoices',{method:'POST',body:{package:c.name}});
+    b.textContent='Invoice '+inv.id+'\nPackage: '+inv.package+'\nPrice: '+inv.price.toFixed(2)+' USDT\nProcessing fee: '+inv.fee.toFixed(2)+' USDT\nNetwork fee: '+inv.gas.toFixed(2)+' USDT\nTotal: '+inv.total.toFixed(2)+' USDT ('+inv.network+')\nAddress: '+inv.address+'\n\nSend your invoice ID to almoizaledrisi@gmail.com after paying.';
+  }catch(err){ b.textContent='Could not create invoice: '+err.message }
+}
+
+/* ---- Owner dashboard ---- */
+async function loadOwnerData(){
+  try{
+    var users=await api('/api/admin/users');
+    $('ownerUsers').innerHTML=users.map(function(u){return '<tr><td>'+esc(u.email)+'<br><span style="color:var(--mut);font-size:12px">trials used: '+u.trialsUsed+'</span></td></tr>'}).join('')||'<tr><td>No accounts yet</td></tr>';
+    var invs=await api('/api/admin/invoices');
+    $('ownerInvoices').innerHTML=invs.map(function(i){return '<tr><td>'+i.id+'<br><span style="color:var(--mut);font-size:12px">'+esc(i.email)+' · '+i.package+' · '+i.total+' USDT</span></td><td>'+
+      '<select onchange="setStatus(\''+i.id+'\',this.value)"><option'+(i.status==='pending'?' selected':'')+'>pending</option><option'+(i.status==='paid'?' selected':'')+'>paid</option><option'+(i.status==='cancelled'?' selected':'')+'>cancelled</option></select></td></tr>'}).join('')||'<tr><td>No invoices yet</td></tr>';
+    var leads=await api('/api/admin/leads');
+    $('ownerLeads').innerHTML=leads.map(function(l){return '<tr><td><b>'+esc(l.company||'(no company name)')+'</b> — '+esc(l.email)+'<br><span style="color:var(--mut);font-size:12px">'+esc(l.problem)+'</span></td></tr>'}).join('')||'<tr><td>No leads yet</td></tr>';
+  }catch(e){ $('ownerUsers').innerHTML='<tr><td>Owner access only.</td></tr>'; $('ownerInvoices').innerHTML=''; $('ownerLeads').innerHTML='' }
+}
+async function setStatus(id,status){
+  try{ await api('/api/admin/invoices/'+id,{method:'PATCH',body:{status:status}}) }
+  catch(e){ alert('Could not update: '+e.message) }
+}
+
+function mail(){
+  var n=encodeURIComponent($('cn').value),m=encodeURIComponent($('cm').value);
+  location.href='mailto:almoizaledrisi@gmail.com?subject='+encodeURIComponent('SolveAI request')+'&body='+m+'%0A%0A'+n;
+}
+
+if(ls('sa_token')){ refreshMe(); } else { renderUser(); }
+calc();
+</script>
+</body>
+</html>
